@@ -4,18 +4,18 @@ for(const [i,p] of [...document.querySelectorAll('.page')].entries()){
  el('div','dot-field',undefined,o);el('div','ribbon',undefined,o);el('div','edge-code',`ARCHIVE / ${data.year} / ${String(i+1).padStart(2,'0')}`,o);
  const stamp=el('div','archive-stamp',undefined,o);el('span','','IN THE MAKING',stamp);el('b','','✦',stamp);el('span','','独属于你的形状',stamp);el('div','folio',`FIELD NOTES   /   ${String(i+1).padStart(2,'0')}   —   ${data.year}`,p);
 }
-if(data.share_card?.image){
+if(data.share_card && data.artwork?.src){
  end.c.replaceChildren();const layout=el('div','final-layout',undefined,end.c),copy=el('div','final-copy',undefined,layout);
  el('p','final-label',data.summary?.eyebrow||'YOUR YEAR / YOUR CHARACTER',copy);el('h2','title',data.summary?.display_title||data.summary?.portrait,copy);if(data.summary?.display_title)el('p','final-persona',data.summary?.portrait.replaceAll('\n',''),copy);el('p','body',data.summary?.body,copy);tags(data.summary?.tags,copy);
  const facts=el('div','final-facts',undefined,copy);for(const m of (data.summary?.metrics||[]).slice(0,4)){const f=el('div','final-fact',undefined,facts);el('b','',m.value,f);el('span','',m.label,f)}
  el('p','summary-note',data.summary?.note,copy);sources(data.summary?.sources,copy);
- const card=el('div','final-card',undefined,layout),img=el('img','share-preview',undefined,card);img.src=data.share_card.image;img.alt='年度画像分享卡：'+data.summary?.portrait.replaceAll('\n','');
- const save=el('a','save-card','保存我的年度卡片 ↓',card);save.href=data.share_card.download_data||data.share_card.image;save.download='我的'+data.year+'年度卡片.png';
+ const card=el('div','final-card',undefined,layout),img=el('img','share-preview',undefined,card);img.src=data.share_card.image||data.artwork.src;img.alt=data.share_card.image?'年度画像分享卡：'+data.summary?.portrait.replaceAll('\n',''):data.artwork.alt;
+ const save=el('a','save-card',data.share_card.image?'保存我的年度卡片 ↓':'打开我的年度分享卡 ↗',card);save.href=data.share_card.download_data||data.share_card.image||data.share_card.html;if(data.share_card.image)save.download='我的'+data.year+'年度卡片.'+(data.share_card.download_data?'png':(data.share_card.image.split('.').pop()||'png'));else{save.target='_blank';save.rel='noopener'}
  layout.inert=true;layout.setAttribute('aria-hidden','true');end.p.classList.add('awaiting-reveal');end.p.setAttribute('aria-busy','true');
  const loader=el('div','persona-loader',undefined,end.c);loader.setAttribute('role','status');loader.setAttribute('aria-live','polite');
  el('p','loader-kicker','YOUR YEAR / YOUR AI PERSONA',loader);el('h2','loader-title','正在生成你的年度 AI 形象',loader);
  const meter=el('div','persona-meter',undefined,loader);meter.setAttribute('role','progressbar');meter.setAttribute('aria-label','年度 AI 形象揭晓进度');meter.setAttribute('aria-valuemin','0');meter.setAttribute('aria-valuemax','100');meter.setAttribute('aria-valuenow','0');const fill=el('div','persona-fill',undefined,meter);
- const percent=el('span','persona-percent','0%',loader);percent.setAttribute('aria-hidden','true');el('p','loader-hint','从这一年的创作里，找到你的专属形状。',loader);el('p','loader-disclosure','形象已根据年度总结生成 · 此处为揭晓动画',loader);
+ const percent=el('span','persona-percent','0%',loader);percent.setAttribute('aria-hidden','true');el('p','loader-hint','从这一年的创作里，找到你的专属形状。',loader);el('p','loader-disclosure',data.artwork?.method==='bundled-reference'?'通用3D风格参考 · 专属形象待生成':'形象已根据年度总结生成 · 此处为揭晓动画',loader);
  let started=false,finished=false;
  function completeReveal(){if(finished)return;finished=true;fill.style.width='100%';meter.setAttribute('aria-valuenow','100');percent.textContent='100%';layout.inert=false;layout.removeAttribute('aria-hidden');end.p.setAttribute('aria-busy','false');end.p.classList.remove('awaiting-reveal');end.p.classList.add('persona-ready');loader.setAttribute('aria-hidden','true');revealObserver.disconnect()}
  const revealObserver=new IntersectionObserver(entries=>{if(started||!entries.some(e=>e.isIntersecting&&e.intersectionRatio>=.25))return;started=true;if(paused||reduced.matches){completeReveal();return}let start=performance.now();function frame(now){if(paused||reduced.matches){completeReveal();return}const x=Math.min(1,(now-start)/3200);const value=Math.round(100*(1-Math.pow(1-x,1.3)));fill.style.width=value+'%';meter.setAttribute('aria-valuenow',String(value));percent.textContent=value+'%';if(x<1)requestAnimationFrame(frame);else completeReveal()}requestAnimationFrame(frame)},{threshold:.25});revealObserver.observe(end.p);

@@ -55,3 +55,5 @@
 `summary`可加`display_title`（如「我的 GPT\n年度报告」）；`share_card`支持`hero:{value,unit,label}`、`project_types`、`project_examples`、`persona_description`、`metrics`（最多4项精选统计）、`display_date`。字段来自当前用户证据，不带任何真实用户的默认数据。`artwork.src`可省略，卡片会隐藏人物区域；有权限与工具时为该用户另生成角色。
 
 `music:{src,title,artist,license,autoplay}`，路径为本地素材，播放遵守浏览器手势政策。`share_card.download_data`可放已核验PNG的内嵌URI，使离线一键下载可用。
+
+角色为标准交付：`artwork:{src,alt,method}`，`method` 可为 `image-tool` 或 `bundled-reference`，按实际生成方式填写。渲染缺少形象时使用同风格基础图并标记待生成，路径进入 `.prepared.json`。形象不出现在封面。分享卡PNG由浏览器导出；使用导出后数据渲染最终报告。

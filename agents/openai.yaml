@@ -1,4 +1,4 @@
 interface:
-  display_name: "这一年 · 年度报告"
+  display_name: "Yearsona · 年度造像"
   short_description: "统计全年项目、对话、token 与常用模型，生成短文案动态年报和个人画像"
-  default_prompt: "使用 $annual-review 生成我今年的动态年度报告，包含 token 投入、项目分布、常用模型和年度画像。"
+  default_prompt: "使用 $yearsona 生成我今年的动态年度报告，包含 token 投入、项目分布、常用模型和年度画像，并自动生成专属潮玩形象与分享卡。"

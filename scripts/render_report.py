@@ -4,6 +4,7 @@ import json
 import math
 import re
 from pathlib import Path
+from persona import reference_artwork
 
 
 def demo_data():
@@ -15,7 +16,7 @@ def demo_data():
         "demo": True, "closing": "下一页，留给还没完成的想象。",
         "summary": {"portrait": "把好奇，做成作品。", "body": "虚构示例：不断尝试与调整，找到自己的表达。", "tags": ["好奇", "尝试", "打磨"], "metrics": [{"value": "12", "label": "示例项目"}, {"value": "86", "label": "示例活跃日"}]},
         "profile": {"name": "虚构示例"},
-        "share_card": {"html": "demo-card.html", "hero": {"value": "128", "unit": "万", "label": "虚构示例 Token"}, "project_types": ["工具探索", "视觉创作"], "metrics": [{"value": "12", "label": "示例项目"}, {"value": "86", "label": "示例活跃日"}], "display_date": "2025 / 虚构示例"},
+        "share_card": {"html": "annual-card.html", "hero": {"value": "128", "unit": "万", "label": "虚构示例 Token"}, "project_types": ["工具探索", "视觉创作"], "metrics": [{"value": "12", "label": "示例项目"}, {"value": "86", "label": "示例活跃日"}], "display_date": "2025 / 虚构示例"},
         "chapters": [
             {"id": "footprints", "eyebrow": "01 / 留下的足迹", "title": "一些问题，\n终于有了自己的形状。",
              "body": "从一张草稿开始，到一个真正能打开的页面。\n你一次次把想法交给现实，再把反馈带回下一次修改。",
@@ -147,6 +148,17 @@ def render(data, template):
     return template.replace(marker, payload)
 
 
+def prepare_persona(data, output):
+    """Always supply an original character; image generation is preferred upstream."""
+    data = json.loads(json.dumps(data))
+    data.setdefault('summary', {'portrait': '把好奇，做成作品。', 'body': '', 'tags': [], 'metrics': []})
+    data.setdefault('share_card', {})
+    if not data.get('artwork', {}).get('src'):
+        data['artwork'] = reference_artwork(output)
+    data['share_card'].setdefault('html', 'annual-card.html')
+    return data
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     source = parser.add_mutually_exclusive_group(required=True)
@@ -162,6 +174,16 @@ def main():
         parser.error("output must not replace input data")
     try:
         data = demo_data() if args.demo else json.loads(args.data.read_text(encoding="utf-8-sig"))
+        validate(data)
+        data = prepare_persona(data, args.output)
+        if '/' in data['share_card']['html']:
+            raise ValueError('share_card.html must be a filename beside the report')
+        prepared = args.output.with_name(args.output.stem + '.prepared.json')
+        if args.data and prepared.resolve() == args.data.resolve():
+            raise ValueError('choose another output name; prepared data must not overwrite input')
+        artwork = args.output.parent / data['artwork']['src']
+        if not artwork.is_file():
+            raise ValueError('artwork asset is missing; copy the generated image into the report directory before rendering')
         if args.card and not all(data.get(key) for key in ('summary', 'share_card')):
             raise ValueError('share card requires summary and share_card data')
         template_path = Path(__file__).resolve().parents[1] / "assets" / ("share-card-template.html" if args.card else "report-template.html")
@@ -169,6 +191,14 @@ def main():
         args.output.parent.mkdir(parents=True, exist_ok=True)
         with args.output.open("w" if args.force else "x", encoding="utf-8") as target:
             target.write(html)
+        prepared.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding='utf-8')
+        if not args.card:
+            card = args.output.parent / data['share_card']['html']
+            if card.resolve() == args.output.resolve():
+                raise ValueError('share_card.html must differ from the report output')
+            if not card.exists() or args.force:
+                card.parent.mkdir(parents=True, exist_ok=True)
+                card.write_text(render(data, (template_path.parent / 'share-card-template.html').read_text(encoding='utf-8')), encoding='utf-8')
     except (OSError, ValueError) as exc:
         parser.error(str(exc))
     print(str(args.output.resolve()))
