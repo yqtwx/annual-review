@@ -7,10 +7,10 @@
 macOS/Linux 默认技能根为 `${CODEX_HOME:-$HOME/.codex}/skills`；Windows 默认 `%USERPROFILE%\.codex\skills`。先用宿主确认实际 CODEX_HOME。技能目录名必须是 `yearsona`。macOS 安装示例：
 
 ```sh
-git clone https://github.com/yqtwx/annual-review.git "${CODEX_HOME:-$HOME/.codex}/skills/yearsona"
+git clone https://github.com/yqtwx/yearsona.git "${CODEX_HOME:-$HOME/.codex}/skills/yearsona"
 ```
 
-技能目录与调用名统一为 `yearsona`，仓库下载地址暂沿用历史地址。输出选择用户可写目录，不能输出到技能安装目录。路径始终引用，允许中文、空格；HTML资源使用正斜杠相对路径，打开本地文件用 `Path.resolve().as_uri()`，不拼接 `file://`。
+仓库、技能目录与调用名统一为 `yearsona`。输出选择用户可写目录，不能输出到技能安装目录。路径始终引用，允许中文、空格；HTML资源使用正斜杠相对路径，打开本地文件用 `Path.resolve().as_uri()`，不拼接 `file://`。
 
 有明确授权的本地 Codex 数据可检查实际 CODEX_HOME 下的 `sessions`、`archived_sessions`，先验证存在及内容格式，再各自分析并按稳定会话ID去重；不要假设每个平台都有相同目录。ChatGPT历史仅从当前工具、导出或用户明确指定来源获取。不要把 macOS 应用容器、Keychain 或浏览器资料当作聊天数据扫描。
 

@@ -65,7 +65,7 @@ assets/        HTML、CSS、交互与分享卡模板
 macOS（Apple Silicon/Intel）使用 `python3`，Windows使用 `python` 或 `py -3`。基础渲染与3D基础图不需要第三方依赖。支持中文和空格目录，所有媒体以相对路径保存。
 
 ```sh
-git clone https://github.com/yqtwx/annual-review.git "${CODEX_HOME:-$HOME/.codex}/skills/yearsona"
+git clone https://github.com/yqtwx/yearsona.git "${CODEX_HOME:-$HOME/.codex}/skills/yearsona"
 ```
 
 PNG导出（可选安装浏览器依赖）：
@@ -80,4 +80,4 @@ python3 scripts/render_report.py --data reports/preview.prepared.exported.json -
 
 具体数据路径、浏览器策略与导出顺序见 [跨平台指南](references/platforms.md)。兼容性工作流在 macOS、Windows 和 Linux 运行交付回归测试；不等同于每个版本都已完成Safari实机测试。
 
-项目已从通用名称 Annual Review 更名为 Yearsona，技能调用为 `$yearsona`。技能目录与调用名统一为 `yearsona`；仓库下载地址暂沿用原地址。
+项目已从通用名称 Annual Review 更名为 Yearsona，技能调用为 `$yearsona`。仓库、技能目录与调用名统一为 `yearsona`。
